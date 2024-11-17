@@ -1,33 +1,23 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../models/weather_model.dart';
 
-class GeocodingApiService {
-  static const String baseUrl = 'http://api.geonames.org/searchJSON';
-  static const String username = 'shahzaddawkins'; // Your GeoNames username
+class WeatherApiService {
+  static const String apiKey =
+      '5e02772982efc053f48c203689d97307'; // Your API key
+  static const String baseUrl =
+      'https://api.agromonitoring.com/agro/1.0/weather';
 
-  // Fetch city details based on the city query
-  Future<Map<String, dynamic>> fetchCityDetails(String query) async {
-    final url = Uri.parse('$baseUrl?q=$query&maxRows=1&username=$username');
+  Future<Weather> fetchWeather(double lat, double lon) async {
+    final url = Uri.parse('$baseUrl?lat=$lat&lon=$lon&appid=$apiKey');
 
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
-
-      if (json['geonames'] != null && json['geonames'].isNotEmpty) {
-        final geoData = json['geonames'][0];
-        return {
-          'name': geoData['name'],
-          'countryName': geoData['countryName'],
-          'population': geoData['population'],
-          'lat': geoData['lat'],
-          'lon': geoData['lng'],
-        };
-      } else {
-        throw Exception('City not found');
-      }
+      return Weather.fromJson(json);
     } else {
-      throw Exception('Failed to fetch city data');
+      throw Exception('Failed to load weather data');
     }
   }
 }

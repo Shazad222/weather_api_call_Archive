@@ -19,7 +19,7 @@ class WeatherScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             // City Name Input
             TextField(
@@ -73,6 +73,47 @@ class WeatherScreen extends StatelessWidget {
                   ),
                   Text(
                     'Longitude: ${viewModel.cityData!['lon']}',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                  const SizedBox(height: 8),
+                  const Divider(),
+                  const SizedBox(height: 8),
+
+                  // Button to Fetch Weather Data
+                  ElevatedButton(
+                    onPressed: () {
+                      viewModel.fetchWeather();
+                    },
+                    child: const Text('Get Weather Data'),
+                  ),
+                ],
+              ),
+            const SizedBox(height: 16),
+
+            // Display Weather Data
+            if (viewModel.weather != null)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'City Weather Data:',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Temperature: ${viewModel.weather!.temperature}°C',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                  Text(
+                    'Weather: ${viewModel.weather!.description}',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                  Text(
+                    'Humidity: ${viewModel.weather!.humidity}%',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                  Text(
+                    'Wind Speed: ${viewModel.weather!.windSpeed} m/s',
                     style: const TextStyle(fontSize: 18),
                   ),
                 ],
