@@ -10,8 +10,7 @@ class WeatherScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final viewModel = Provider.of<WeatherViewModel>(context);
 
-    final TextEditingController latController = TextEditingController();
-    final TextEditingController lonController = TextEditingController();
+    final TextEditingController cityController = TextEditingController();
 
     return Scaffold(
       appBar: AppBar(
@@ -22,43 +21,29 @@ class WeatherScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // City Name Input
             TextField(
-              controller: latController,
-              keyboardType: TextInputType.number,
+              controller: cityController,
               decoration: const InputDecoration(
-                labelText: 'Enter Latitude',
+                labelText: 'Enter City Name',
                 border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
-            TextField(
-              controller: lonController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Enter Longitude',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                final lat = double.tryParse(latController.text);
-                final lon = double.tryParse(lonController.text);
 
-                if (lat != null && lon != null) {
-                  viewModel.fetchWeather(lat, lon);
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content:
-                          Text('Please enter valid latitude and longitude'),
-                    ),
-                  );
+            // Button to Fetch City Data
+            ElevatedButton(
+              onPressed: () async {
+                final cityName = cityController.text;
+                if (cityName.isNotEmpty) {
+                  await viewModel.fetchCityData(cityName);
                 }
               },
-              child: const Text('Get Weather'),
+              child: const Text('Get City Data'),
             ),
             const SizedBox(height: 16),
+
+            // Display the fetched city details
             if (viewModel.isLoading)
               const CircularProgressIndicator()
             else if (viewModel.errorMessage.isNotEmpty)
@@ -66,16 +51,29 @@ class WeatherScreen extends StatelessWidget {
                 viewModel.errorMessage,
                 style: const TextStyle(color: Colors.red),
               )
-            else if (viewModel.weather != null)
+            else if (viewModel.cityData != null)
               Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Temperature: ${viewModel.weather!.temperature}°C',
-                    style: const TextStyle(fontSize: 20),
+                    'City Name: ${viewModel.cityData!['name']}',
+                    style: const TextStyle(fontSize: 18),
                   ),
                   Text(
-                    'Description: ${viewModel.weather!.description}',
-                    style: const TextStyle(fontSize: 20),
+                    'Country: ${viewModel.cityData!['countryName']}',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                  Text(
+                    'Population: ${viewModel.cityData!['population']}',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                  Text(
+                    'Latitude: ${viewModel.cityData!['lat']}',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                  Text(
+                    'Longitude: ${viewModel.cityData!['lon']}',
+                    style: const TextStyle(fontSize: 18),
                   ),
                 ],
               ),

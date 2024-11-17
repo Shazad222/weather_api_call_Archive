@@ -7,7 +7,7 @@ class Weather {
     required this.description,
   });
 
-  // Factory constructor to create a Weather object from API response
+  // Factory constructor to parse API response into Weather object
   factory Weather.fromJson(Map<String, dynamic> json) {
     return Weather(
       temperature: json['main']['temp'],

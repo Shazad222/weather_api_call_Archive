@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
-import '../models/weather_model.dart';
-import '../services/weather_api_service.dart';
+import '../services/geocoding_api_service.dart';
 
 class WeatherViewModel extends ChangeNotifier {
-  final WeatherApiService _apiService = WeatherApiService();
+  final GeocodingApiService _geocodingApiService = GeocodingApiService();
 
-  Weather? _weather;
+  Map<String, dynamic>? _cityData;
   String _errorMessage = '';
   bool _isLoading = false;
 
-  Weather? get weather => _weather;
+  Map<String, dynamic>? get cityData => _cityData;
   String get errorMessage => _errorMessage;
   bool get isLoading => _isLoading;
 
-  Future<void> fetchWeather(double lat, double lon) async {
+  Future<void> fetchCityData(String cityName) async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      _weather = await _apiService.fetchWeather(lat, lon);
+      final cityDetails = await _geocodingApiService.fetchCityDetails(cityName);
+      _cityData = cityDetails;
       _errorMessage = '';
     } catch (e) {
-      _errorMessage = e.toString();
-      _weather = null;
+      _errorMessage = 'Failed to fetch city data: $e';
+      _cityData = null;
     } finally {
       _isLoading = false;
       notifyListeners();
